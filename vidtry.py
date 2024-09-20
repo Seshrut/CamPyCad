@@ -22,6 +22,7 @@ capture = cv.VideoCapture(0) # replace 0 with video location
 while True:
     isTrue, frame = capture.read()
     # frame_resized = rescale(frame)
+    frame = change_brightness(frame,100)
     gray = cv.cvtColor(frame,cv.COLOR_BGR2GRAY)
     canny = cv.Canny(gray,150,175)
     l.append(canny)
