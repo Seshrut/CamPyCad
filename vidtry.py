@@ -19,10 +19,24 @@ def change_brightness(img, value=30):
 i = 0
 l = []
 capture = cv.VideoCapture(0) # replace 0 with video location
+# change height and width of image
+cap_w = int(capture.get(cv.CAP_PROP_FRAME_WIDTH))
+cap_h = int(capture.get(cv.CAP_PROP_FRAME_HEIGHT))
+# grid dimensions
+grid_w = cap_w//5
+grid_h = cap_h//5
+# corners list
+corners_list = grid_corners = [(x,y) for x in range(0,cap_w,grid_w) for y in range(0,cap_h,grid_h)]
 while True:
     isTrue, frame = capture.read()
     # frame_resized = rescale(frame)
     frame = change_brightness(frame,100)
+    #show grid
+    i = 0
+    for t_lft_corners in corners_list:
+        btm_rt_corners = (t_lft_corners[0]+grid_w,t_lft_corners[1]+grid_h)
+        cv.rectangle(frame,t_lft_corners,btm_rt_corners,color=(255,0,0),thickness=5)
+        i+=1
     gray = cv.cvtColor(frame,cv.COLOR_BGR2GRAY)
     canny = cv.Canny(gray,150,175)
     l.append(canny)
