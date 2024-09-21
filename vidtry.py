@@ -17,6 +17,7 @@ def change_brightness(img, value=30):
     img = cv.cvtColor(final_hsv, cv.COLOR_HSV2BGR)
     return img
 i = 0
+j=0
 l = []
 capture = cv.VideoCapture(0) # replace 0 with video location
 # change height and width of image
@@ -32,7 +33,6 @@ while True:
     # frame_resized = rescale(frame)
     frame = change_brightness(frame,100)
     #show grid
-    j = 0
     for t_lft_corners in corners_list:
         btm_rt_corners = (t_lft_corners[0]+grid_w,t_lft_corners[1]+grid_h)
         cv.rectangle(frame,t_lft_corners,btm_rt_corners,color=(255,0,0),thickness=5)
@@ -45,10 +45,10 @@ while True:
     # cv.imshow('Video_resized', frame_resized)
     j += 1
     addframe = 0
-    if j%15==1:
+    if j%5==1:
         for frame in l:
             addframe+=frame
-        avgframe = addframe/15
+        avgframe = addframe/5
         cv.imshow('eh',avgframe)
         l = []
     if cv.waitKey(20) & 0xFF==ord('d'):
