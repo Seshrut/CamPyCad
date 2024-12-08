@@ -14,14 +14,16 @@ class_names = [labels for labels in os.listdir(data_dir)]
 def load_data(data_dir):
     images = []
     labels = []
+    defi = 0
     for class_name in class_names:
+        defi+=1
         class_dir = os.path.join(data_dir, class_name)
         for filename in os.listdir(class_dir):
             image_path = os.path.join(class_dir, filename)
             image = cv2.imread(image_path)
             images.append(image)
             labels.append(class_names.index(class_name))
-        print(f'{class_name} defined')
+        print(f'{class_name} defined {defi*100//len(class_names)}%')
 
     return np.array(images), np.array(labels)
 

@@ -1,56 +1,46 @@
+import joblib
 import numpy as np
-import cv2
-from sklearn.model_selection import train_test_split
 from sklearn.neural_network import MLPClassifier
+from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 import os
-import joblib
+import cv2
 
-# Load images and extract features
-def load_images_and_extract_features(image_dir):
+
+data_dir = "photos/dataset_final"
+class_names = [labels for labels in os.listdir(data_dir)]
+
+# Load images and labels
+def load_data(data_dir):
     images = []
     labels = []
-    for class_label in range(1, 11):  # Assuming 10 classes
-        class_dir = f"{image_dir}/class_{class_label}"
-        for image_name in os.listdir(class_dir):
-            image_path = os.path.join(class_dir, image_name)
-            img = cv2.imread(image_path)
-            # Extract features (e.g., using HOG)
-            features = extract_hog_features(img)
-            images.append(features)
-            labels.append(class_label)
+    defi = 0
+    for class_name in class_names:
+        defi += 1
+        class_dir = os.path.join(data_dir, class_name)
+        for filename in os.listdir(class_dir):
+            image_path = os.path.join(class_dir, filename)
+            image = cv2.imread(image_path)
+            images.append(image)
+            labels.append(class_names.index(class_name))
+        print(f'{class_name} defined {defi*100//len(class_names)}%')
+
     return np.array(images), np.array(labels)
 
-# Extract HOG features (replace with your own feature extraction method)
-def extract_hog_features(img):
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    hog = cv2.HOGDescriptor()
-    features = hog.compute(gray)
-    return features.flatten()
-
-# Load images and extract features
-image_dir = "path/to/your/image/directory"
-X, y = load_images_and_extract_features(image_dir)
-
-# Reshape data if necessary
-if len(X.shape) == 4:
-    X = X.reshape(X.shape[0], -1)
-
-# Split data into training and testing sets
+print('loading data')
+X, y = load_data(data_dir)
+print('data loaded, now spliting')
+X = X.reshape(X.shape[0], -1)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-# Create MLP classifier with Adam optimizer
-clf = MLPClassifier(solver='adam', alpha=0.0001, hidden_layer_sizes=(100, 50), random_state=42)
-
-# Train the classifier
+print('settings for model')
+clf = MLPClassifier(solver='adam', alpha=0.0001, hidden_layer_sizes=(300 ,250 ,200, 150, 100, 50), random_state=42)# Experiment with different kernels (e.g., 'rbf', 'poly')
+print('started training')
 clf.fit(X_train, y_train)
 
-joblib.dump(clf,'neuralnetmodel.pkl')
+joblib.dump(clf,"neural_model_scikit_300_nuerons.pkl")
 
-# Make predictions on the test set
+print('testing')
 y_pred = clf.predict(X_test)
-
-# Calculate accuracy
+print('calculating acuracy')
 accuracy = accuracy_score(y_test, y_pred)
 print("Accuracy:", accuracy)
-
